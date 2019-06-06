@@ -1,44 +1,59 @@
 import tkinter as tk
 import tkinter.messagebox
 import morse as m
-
+import os
 
 def gui():
+    # todo odsud dal zrejme dat do noveho souboru guifuns
     def button_preloz():
         '''
         Algorytmus - dostane zpravu z input. Rozhodne jestli je morse nebo plaintext - var is_morse. Prevede na opacnou
         a ulozi do var output. Output vypise do okna output.
         '''
-        print('button P pressed')
-        input_text = inputbox.get(0.0,'end')
+        input_text = inputbox.get(0.0,'end').split('\n')
+        input_text.pop()    # Textbox nechává na konci prázdý str, tohle ho smaže
 
         input_ismorse = False
         if '.' and '-' and '/' in input_text:
             input_ismorse=True
 
+        output=[]
         if input_ismorse:
-            output = m.Morse().dec(input_text)
+            for line in input_text:
+                output.append(m.Morse().dec(line))
         else:
-            output = m.Morse().enc(input_text)
-
-        disp_output(output)     # Zobrazi vysledek ve spodnim okne
-
+            for line in input_text:
+                output.append(m.Morse().enc(line))
+                # todo Vymyslet nejake normalni oddelovani / (jak ma zacinat x koncit radek)
+        disp_output('\n'.join(output))     # Zobrazi vysledek ve spodnim okne
 
     def disp_output(message):
         outputbox.config(state='normal')    # Prepsani outputboxu
         outputbox.delete(0.0, 'end')
         outputbox.insert('end', message)
 
-    def write_file():
+    def writefile(filename, content):     # zatim asi redundant
+        with open(filename, 'w') as f:
+            f.write(content)
+
+    def uloz():
         text = outputbox.get(0.0,'end')
         filename = e_filename.get()
-        if not filename.endswith('.txt'):
+        if not filename.endswith('.txt'):   # prida priponu .txt
             filename += '.txt'
 
-        with open(filename, 'w') as f:  # todo - pridat varovani pred prepsanim existujiciho souboru
-            f.write(text)
+        # if file with given name exists: display warning window - proceed or not
+        if os.path.isfile(filename):
+            rewrite = tk.messagebox.askyesno('Warning', 'Tento soubor už existuje. Přejete si ho přepsat?',
+                                             icon='warning')   # returns True or False
+            if not rewrite:
+                print('soubor ulozen nebude')
+                return  # (else pokračuj)
 
+        writefile(filename, text)
         tkinter.messagebox.showinfo('Info', message=f"Zpráva uložena jako '{filename}'")
+    # dat do guifuns po sem
+
 
 
     label_font = ('Arial', 11)
@@ -51,7 +66,7 @@ def gui():
     root.title('Morse')
     root.geometry('650x600') # WixHe
 
-    # Todo - nahore lista s funkci nahrat soubor
+    # Todo - nahore lista s funkci nahrat soubor, ulozit, napoveda...
 
     # Prvni tretina appky
     frame1_height=220
@@ -94,10 +109,10 @@ def gui():
 
     tk.Frame(frame21, width=20).pack(side='left')
 
-    b_uloz = tk.Button(frame21, text='Uložit', font=label_font, command=write_file)
+    b_uloz = tk.Button(frame21, text='Uložit', font=label_font, command=uloz)
     b_uloz.pack(side='left')
 
-
+    # Todo - posledni tretina na tvorbu audio souboru
 
     root.mainloop()
 
