@@ -9,6 +9,7 @@ MORSE_DICT_ATM = {
     "F": "..-.",
     "G": "--.",
     "H": "....",
+    "CH": "----",
     "I": "..",
     "J": ".---",
     "K": "-.-",
@@ -97,7 +98,14 @@ class Morse:
             msg_alph[n] += "."  # Prida tecku na konec vety
         return " ".join(msg_alph)  # Vrati vety spojene mezerami
 
-
+def is_morse(string: str) -> bool:
+    for char in string[:100]:
+        if char.isalnum:
+            return False
+    if "." in string or "-" in string:
+        return True
+    return False
+    
 if __name__ == '__main__':
     # Testing translate functions...
     # msg = 'Ja jsem ja. Nebo. Kdo?'

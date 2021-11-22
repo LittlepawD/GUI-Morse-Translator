@@ -10,22 +10,31 @@ def gui():
         Algorytmus - dostane zpravu z input. Rozhodne jestli je morse nebo plaintext - var is_morse. Prevede na opacnou
         a ulozi do var output. Output vypise do okna output.
         '''
-        input_text = inputbox.get(0.0,'end').split('\n')
-        input_text.pop()    # Textbox nechává na konci prázdý str, tohle ho smaže
+        input_text = inputbox.get(0.0,'end')
+        input_ismorse = m.is_morse(input_text)
+        input_text_list = input_text.split("\n")    # Textbox nechává na konci prázdý str, tohle ho smaže
 
-        input_ismorse = False
-        if '.' and '-' and '/' in input_text:
-            input_ismorse=True
 
         output=[]
         if input_ismorse:
-            for line in input_text:
+            for line in input_text_list:
                 output.append(m.Morse().dec(line))
         else:
-            for line in input_text:
+            for line in input_text_list:
                 output.append(m.Morse().enc(line))
                 # todo Vymyslet nejake normalni oddelovani / (jak ma zacinat x koncit radek)
-        disp_output('\n'.join(output))     # Zobrazi vysledek ve spodnim okne
+        disp_output('\n'.join(pretify_output(output)))     # Zobrazi vysledek ve spodnim okne
+    
+    def pretify_output(message: list):
+        try:
+            message.remove("")
+        except ValueError:
+            pass
+        try:
+            message.remove(".")
+        except ValueError:
+            pass
+        return message
 
     def disp_output(message):
         outputbox.config(state='normal')    # Prepsani outputboxu
